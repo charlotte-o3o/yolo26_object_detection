@@ -40,4 +40,5 @@ Thumbs.db
 
 Enregistrements vidéos RealSense/
 *.avi
-captures_realsense
+*.mp4
+captures_realsense/
