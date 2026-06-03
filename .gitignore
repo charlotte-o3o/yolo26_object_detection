@@ -1,0 +1,38 @@
+# === Environnements Virtuels ===
+.venv/
+venv/
+env/
+ENV/
+nvm/
+node_modules/
+
+# === Fichiers temporaires Python ===
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+htmlcov/
+.tox/
+.coverage
+.cache
+.pytest_cache/
+
+# === Sécurité et Configuration (Ne pas partager vos mots de passe/clés) ===
+.env
+*.local
+config.json
+certs/
+*.pem
+*.key
+
+# === Fichiers du système ou de l'éditeur ===
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
