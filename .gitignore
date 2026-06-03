@@ -36,9 +36,8 @@ Thumbs.db
 *.njsproj
 *.sln
 *.swp
+*.pt
 
 Enregistrements vidéos RealSense/
 *.avi
-
-
-*.pt
+captures_realsense
