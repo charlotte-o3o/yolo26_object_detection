@@ -56,7 +56,7 @@ align = rs.align(rs.stream.color)
 print("Lancement de l'enregistrement vidéo...")
 
 # --- Config enregistrement vidéo
-video_directory = "Enregistrements vidéos RealSense"
+video_directory = "captures_realsense"
 
 if not os.path.exists(video_directory):
     os.makedirs(video_directory)
@@ -88,6 +88,10 @@ for class_id in model.names.keys():
 
 try:
     while True:
+
+        ###################################################################
+        #                    RECUPERATION DE L'IMAGE                      # 
+        ###################################################################
 
         # --- Récupération des frames brutes de la caméra (non alignées)
         frames = pipeline.wait_for_frames()
@@ -137,6 +141,12 @@ try:
             # --- On n'applique pas YOLO => inference = 0.0ms
             inference_time = 0.0
         else:
+
+        ###################################################################
+        #                     DETECTION DES OBJETS                        #
+        #                     SI MOUVEMENT DETECTE                        #
+        ###################################################################
+
             # --- Mouvement(s) détecté(s)
             """
                 Filtrage de classes : 
@@ -160,7 +170,8 @@ try:
         """
 
         ###################################################################
-        #                     DETECTION DES OBJETS                        #
+        #                         TRAITEMENT DES                          #
+        #                         BOUNDING BOXES                          #
         ###################################################################
         
         for r in results:
@@ -181,20 +192,20 @@ try:
                 # --- Coordonnées du centre de la boîte
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
 
-                # --- FILTRE DE MOUVEMENT ---
-                # On regarde la zone de la boîte de détection dans le masque de mouvement
+                # --- Filtrage des faux positifs
+                # --- Extrait la ROI => la bounding box de l'objetc détecté
                 roi_motion = fg_mask[y1:y2, x1:x2]
                 
-                # S'il n'y a pas assez de pixels blancs (mouvement) dans cette boîte, on ignore l'objet
-                # Ici, il faut au moins 150 pixels en mouvement dans la boîte pour l'activer
-                if np.sum(roi_motion == 255) < 150:
-                    continue # L'objet est immobile, on passe au suivant sans le dessiner !
+                # --- Si le nombre de pixels en mouvement < fp_threshold, on ignore l'objet
+                fp_threshold = 150
+                if np.sum(roi_motion == 255) < fp_threshold:
+                    continue
 
                 # --- Centre de la boîte pour calculer la distance
                 x_center = int((x1 + x2) / 2)
                 y_center = int((y1 + y2) / 2)
                 
-                # --- Distance en m (grâce à l'alignement)
+                # --- Distance en m (grâce à l'alignement des frames)
                 distance = depth_frame.get_distance(x_center, y_center)
 
                 # --- Nommage de la classe de l'objet détecté grâce au mapping de names
@@ -211,6 +222,13 @@ try:
                 cv2.circle(img, (x_center, y_center), 4, (0, 0, 255), -1)
 
                 print(f"Object: {model.names[int(box.cls[0])]} | Distance: {distance:.2f}m")
+
+
+        ###################################################################
+        #                  AFFICHAGE DE L'IMAGE RGB                       #
+        #               AVEC OBJETS EN MOUVEMENT DETECTES                 #           
+        #                  ET DU MASQUE DE MOUVEMENT                      #
+        ###################################################################        
 
 
         # --- Calcul du fps théorique de l'IA et affichage sur l'image RGB
