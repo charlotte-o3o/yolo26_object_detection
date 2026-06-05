@@ -38,5 +38,6 @@ Thumbs.db
 # === Sous-dossiers
 captures_realsense/
 OrbbecSDK/
+Orbbec_Femto_Bolt/Log/
 Log/
 env/
