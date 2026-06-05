@@ -221,8 +221,8 @@ try:
                 # --- Dessin sur l'image RGB des BB, nom de classe, centre des BB, distance...
                 text = f"{label} ({confiance:.1f}%) : {distance:.2f}m"
 
-                cv2.rectangle(img, (x1, y1), (x2, y2), couleur, 2) # Changer (255, 0, 0) par couleur pour les classes colorées
-                cv2.putText(img, text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, couleur, 2) # Changer (255, 0, 0) par couleur pour les classes colorées
+                cv2.rectangle(img, (x1, y1), (x2, y2), couleur, 2)
+                cv2.putText(img, text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, couleur, 2)
                 cv2.circle(img, (x_center, y_center), 4, (0, 0, 255), -1)
 
                 print(f"Object: {model.names[int(box.cls[0])]} | Distance: {distance:.2f}m")

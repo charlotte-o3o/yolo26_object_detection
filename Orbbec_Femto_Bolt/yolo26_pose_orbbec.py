@@ -1,5 +1,12 @@
 import os
 os.environ["DISPLAY"] = ":1"
+os.environ["QT_LOGGING_RULES"] = "*.warning=false"
+
+import sys
+import contextlib
+
+with contextlib.redirect_stdout(None):
+    from pyorbbecsdk import Pipeline, Config, OBSensorType, OBAlignMode
 
 import threading
 import queue
@@ -8,6 +15,16 @@ import time
 import numpy as np
 from pyorbbecsdk import Pipeline, Config, OBSensorType, OBAlignMode
 from ultralytics import YOLO
+
+SAVE_MODE = False
+CONFIDENCE_THRESHOLD = 0.50
+MIN_SAVING_INTERVAL = 0.50
+
+OUTPUT_DIR = "captures"
+if not os.path.exists(OUTPUT_DIR):
+    os.makedirs(OUTPUT_DIR)
+
+last_save_time = 0
 
 model = YOLO("yolo26n-pose.pt")
 
@@ -31,7 +48,8 @@ def inference_worker():
         frame_bgr, distance_m, width, height = item
 
         start_time = time.perf_counter()
-        results = model(frame_bgr, verbose=False)
+        results = model(frame_bgr, conf=CONFIDENCE_THRESHOLD, verbose=False)
+        results = list(results)
         end_time = time.perf_counter()
 
         inference_time_ms = (end_time - start_time) * 1000.0
@@ -42,7 +60,6 @@ def inference_worker():
         boxes = results[0].boxes
         keypoints_object = results[0].keypoints
         num_persons = len(boxes) if boxes is not None else 0
-
 
 
         if boxes is not None and keypoints_object is not None and frame_depth is not None:
@@ -76,7 +93,7 @@ def inference_worker():
                     if distance_box_m > 0:
                         text_dist = f"{distance_box_m:.2f}m"
                     else:
-                        text_dist = "Inconnue"
+                        text_dist = "Dist. inconnue"
 
                     # Dessiner un petit point au centre de la boîte
                     cv2.circle(annotated_frame, (cx, cy), 5, (0, 0, 255), -1)
@@ -90,10 +107,19 @@ def inference_worker():
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
         if not display_queue.full():
-            display_queue.put(annotated_frame)
+            display_queue.put((annotated_frame, frame_bgr, num_persons))
 
 infer_thread = threading.Thread(target=inference_worker, daemon=True)
 infer_thread.start()
+
+print()
+print("----- YOLO26 Pose - détection de personnes et calcul de la pose -----")
+print()
+if SAVE_MODE:
+    print("Mode sauvegarde d'images activé ! Les images des personnes détectées seront enregistrées.")
+else:
+    print("Mode sauvegarde désactivé.")
+print()
 
 try:
     profile_list = pipe.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
@@ -141,8 +167,29 @@ try:
 
         # Affichage dans le thread principal
         if not display_queue.empty():
-            annotated = display_queue.get_nowait()
+
+            annotated, original, num_persons = display_queue.get_nowait()
+
+            current_datetime_str = time.strftime("%d/%m/%Y  %H:%M:%S")
+
+            cv2.putText(annotated, current_datetime_str, (width - 225, 30),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+
             cv2.imshow("YOLO26-Pose", annotated)
+
+            if num_persons > 0:
+                current_time = time.time()
+                if current_time - last_save_time >= MIN_SAVING_INTERVAL:
+                    last_save_time = current_time
+
+                    timestamp = time.strftime("%Y-%m-%d_%H:%M:%S")
+                    filename = f"{OUTPUT_DIR}/detection_{timestamp}.jpg"
+                    
+                    if SAVE_MODE:
+                        cv2.imwrite(filename, annotated)
+                        print(f"[INFO] {num_persons} personne(s) détectée(s) à {time.strftime('%H:%M:%S')} (image enregistrée)")
+                    else: 
+                        print(f"[INFO] {num_persons} personne(s) détectée(s) à {time.strftime('%H:%M:%S')}")
 
         if cv2.waitKey(1) & 0xFF == 27:
             break
@@ -150,4 +197,6 @@ try:
 finally:
     inference_queue.put(None)
     pipe.stop()
+    print()
+    print("Arrêt de la caméra !")
     cv2.destroyAllWindows()

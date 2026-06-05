@@ -36,8 +36,9 @@ Thumbs.db
 *.jpg
 
 # === Sous-dossiers
-captures_realsense/
+Intel_RealSense_D435f/captures_realsense
 OrbbecSDK/
 Orbbec_Femto_Bolt/Log/
+Orbbec_Femto_Bolt/captures
 Log/
 env/
