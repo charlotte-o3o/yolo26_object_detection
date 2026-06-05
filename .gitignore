@@ -1,11 +1,3 @@
-# === Environnements Virtuels ===
-.venv/
-venv/
-env/
-ENV/
-nvm/
-node_modules/
-
 # === Fichiers temporaires Python ===
 __pycache__/
 *.pyc
@@ -18,7 +10,7 @@ htmlcov/
 .cache
 .pytest_cache/
 
-# === Sécurité et Configuration (Ne pas partager vos mots de passe/clés) ===
+# === Sécurité et Configuration
 .env
 *.local
 config.json
@@ -26,7 +18,7 @@ certs/
 *.pem
 *.key
 
-# === Fichiers du système ou de l'éditeur ===
+# === Fichiers du système ou de l'éditeur
 .DS_Store
 Thumbs.db
 .vscode/
@@ -38,7 +30,12 @@ Thumbs.db
 *.swp
 *.pt
 
-Enregistrements vidéos RealSense/
+# === Enregistrements vidéos RealSense/
 *.avi
 *.mp4
+
+# === Sous-dossiers
 captures_realsense/
+OrbbecSDK/
+Log/
+env/
