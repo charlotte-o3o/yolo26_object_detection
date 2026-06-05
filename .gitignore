@@ -30,9 +30,10 @@ Thumbs.db
 *.swp
 *.pt
 
-# === Enregistrements vidéos RealSense/
+# === Enregistrements vidéos et photos
 *.avi
 *.mp4
+*.jpg
 
 # === Sous-dossiers
 captures_realsense/

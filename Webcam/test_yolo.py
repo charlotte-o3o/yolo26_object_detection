@@ -6,7 +6,7 @@ from ultralytics import YOLO
 model = YOLO("yolo26n.pt") 
 
 # 2. Ouvrir la webcam (0 est généralement la webcam intégrée)
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(4)
 
 print("Lancement de YOLO26. Appuyez sur 'q' pour quitter.")
 

@@ -7,7 +7,7 @@ model = YOLO("yolo26n-seg.pt")
 
 # 2. Initialiser la webcam intégrée de l'ordinateur
 # '0' est l'index de la caméra par défaut de ton PC
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(4)
 
 if not cap.isOpened():
     print("Erreur : Impossible d'accéder à la webcam de l'ordinateur.")

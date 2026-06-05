@@ -62,12 +62,12 @@ try:
             distance_m = distance_mm / 1000.0
 
             # Afficher les infos sur l'image
-            cv2.circle(frame_rgb, (cx, cy), 5, (0, 255, 0), -1)
-            cv2.putText(frame_rgb, f"Z au centre: {distance_m:.2f} m", (30, 50), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.circle(frame_rgb, (cx, cy), 5, (0, 255, 0), -1)
+        cv2.putText(frame_rgb, f"Z au centre: {distance_m:.2f} m", (30, 50), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
             # Afficher le flux vidéo
-            cv2.imshow("Femto Bolt - RGB", frame_rgb)
+        cv2.imshow("Femto Bolt - RGB", frame_rgb)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break

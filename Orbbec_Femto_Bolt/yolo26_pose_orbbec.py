@@ -8,7 +8,7 @@ import numpy as np
 from pyorbbecsdk import Pipeline, Config, OBSensorType, OBAlignMode
 from ultralytics import YOLO
 
-model = YOLO("yolov8n-pose.pt")
+model = YOLO("yolo26n-pose.pt")
 
 pipe = Pipeline()
 config = Config()
