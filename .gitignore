@@ -42,3 +42,5 @@ Orbbec_Femto_Bolt/Log/
 Orbbec_Femto_Bolt/captures
 Log/
 env/
+dataset/
+data.yaml
