@@ -2,7 +2,6 @@ import os
 os.environ["DISPLAY"] = ":1"
 os.environ["QT_LOGGING_RULES"] = "*.warning=false"
 
-import sys
 import contextlib
 
 with contextlib.redirect_stdout(None):
@@ -63,43 +62,41 @@ def inference_worker():
 
 
         if boxes is not None and keypoints_object is not None and frame_depth is not None:
-            for box in boxes:
 
-                kpts = keypoints_object.data.cpu().numpy()
+            kpts = keypoints_object.data.cpu().numpy()
 
-                for i, box in enumerate(boxes):
-                    # S'assurer que les keypoints existent pour cette personne
-                    if i >= len(kpts):
-                        continue
+            for i, box in enumerate(boxes):
+                # S'assurer que les keypoints existent pour cette personne
+                if i >= len(kpts):
+                    continue
 
-                    person_kpts = kpts[i]
+                person_kpts = kpts[i]
 
-                    x_l_shoulder, y_l_shoulder, conf_l = person_kpts[5] # Épaule gauche
-                    x_r_shoulder, y_r_shoulder, conf_r = person_kpts[6] # Épaule droite
+                x_l_shoulder, y_l_shoulder, conf_l = person_kpts[5] # Épaule gauche
+                x_r_shoulder, y_r_shoulder, conf_r = person_kpts[6] # Épaule droite
 
-                    cx = int((x_l_shoulder + x_r_shoulder) / 2)
-                    cy = int((y_l_shoulder + y_r_shoulder) / 2)
-                    target_name = "Torse"
+                cx = int((x_l_shoulder + x_r_shoulder) / 2)
+                cy = int((y_l_shoulder + y_r_shoulder) / 2)
 
-                    if cx == 0 and cy == 0:
-                        continue
+                if cx == 0 and cy == 0:
+                    continue
 
-                    h, w = frame_depth.shape
-                    cx = max(0, min(cx, w - 1))
-                    cy = max(0, min(cy, h - 1))
+                h, w = frame_depth.shape
+                cx = max(0, min(cx, w - 1))
+                cy = max(0, min(cy, h - 1))
 
-                    distance_box_m = frame_depth[cy, cx] / 1000.0
- 
-                    if distance_box_m > 0:
-                        text_dist = f"{distance_box_m:.2f}m"
-                    else:
-                        text_dist = "Dist. inconnue"
+                distance_box_m = frame_depth[cy, cx] / 1000.0
 
-                    # Dessiner un petit point au centre de la boîte
-                    cv2.circle(annotated_frame, (cx, cy), 5, (0, 0, 255), -1)
+                if distance_box_m > 0:
+                    text_dist = f"{distance_box_m:.2f}m"
+                else:
+                    text_dist = "Dist. inconnue"
 
-                    cv2.putText(annotated_frame, text_dist, (cx + 10, cy - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+                # Dessiner un petit point au centre de la boîte
+                cv2.circle(annotated_frame, (cx, cy), 5, (0, 0, 255), -1)
+
+                cv2.putText(annotated_frame, text_dist, (cx + 10, cy - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
 
         cv2.putText(annotated_frame, f"Person(s): {num_persons}", (30, 40), 
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
@@ -189,16 +186,14 @@ try:
 
 
             if num_persons > 0:
-                current_time = time.time()
-                if current_time - last_save_time >= MIN_SAVING_INTERVAL:
-                    last_save_time = current_time
-
-                    timestamp = time.strftime("%Y-%m-%d_%H:%M:%S")
-                    filename = f"{OUTPUT_DIR}/detection_{timestamp}.jpg"
-                    
                     if SAVE_MODE:
-                        cv2.imwrite(filename, annotated)
-                        print(f"[INFO] {num_persons} personne(s) détectée(s) à {time.strftime('%H:%M:%S')} (image enregistrée)")
+                        current_time = time.time()
+                        if current_time - last_save_time >= MIN_SAVING_INTERVAL:
+                            last_save_time = current_time
+                            timestamp = time.strftime("%Y-%m-%d_%H:%M:%S")
+                            filename = f"{OUTPUT_DIR}/detection_{timestamp}.jpg"
+                            cv2.imwrite(filename, annotated)
+                            print(f"[INFO] {num_persons} personne(s) détectée(s) à {time.strftime('%H:%M:%S')} (image enregistrée)")
                     else: 
                         print(f"[INFO] {num_persons} personne(s) détectée(s) à {time.strftime('%H:%M:%S')}")
 
