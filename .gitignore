@@ -36,11 +36,12 @@ Thumbs.db
 *.jpg
 
 # === Sous-dossiers
-Intel_RealSense_D435f/captures_realsense
+Intel_RealSense_D435f/captures_realsense/
 OrbbecSDK/
 Orbbec_Femto_Bolt/Log/
-Orbbec_Femto_Bolt/captures
+Orbbec_Femto_Bolt/captures/
 Log/
 env/
 dataset/
 data.yaml
+alien_video/
