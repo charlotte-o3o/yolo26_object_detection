@@ -1,8 +1,8 @@
 # YOLO26 Object Detection & Pose Estimation
 
-Ce dépôt contient le code développé pour la **détection d'objets lancés** ainsi que la **détection de personnes** en temps réel, en utilisant des modèles YOLO avancés.
+Ce dépôt contient un code développé pour la **détection d'objets lancés** ainsi que la **détection de personnes** en temps réel, en utilisant des modèles YOLO avancés.
 
-## 🚀 Fonctionnalités principales
+## 🤖 Fonctionnalités principales
 
 * **Détection d'objets lancés :** Utilisation d'un modèle **YOLO26 personnalisé (fine-tuné par mes soins)** spécialement entraîné pour suivre et détecter des objets en mouvement rapide.
 * **Estimation de pose (Pose Estimation) :** Intégration de **YOLO Pose** pour la détection et le suivi des personnes/structures corporelles.
@@ -31,3 +31,12 @@ yolo26_object_detection/
 │   └── ...                        # segmentation.py, test_yolo.py
 │
 └── .gitignore
+```
+
+## 🧠 Modèle YOLO26 Fine-Tuné
+
+Le modèle de détection d'objets inclus dans ce dépôt a été **fine-tuné** sur un jeu de données personnalisé afin d'optimiser la précision de la détection sur des objets lancés **spécifiques**, non présents dans le dataset COCO sur lequel les modèles YOLO sont usuellement entraînés.
+
+## 🚧 Work In Progress (WIP)
+
+* **Guide de téléchargement à venir :** Les fichiers du modèle étant volumineux, un guide détaillé expliquant comment et où télécharger les poids du modèle fine-tuné sera très prochainement ajouté à cette section.
