@@ -60,7 +60,7 @@ align = rs.align(rs.stream.color)
 print("Lancement de l'enregistrement vidéo...")
 
 # --- Config enregistrement vidéo
-video_directory = "captures_realsense"
+video_directory = "captures_videos"
 
 if not os.path.exists(video_directory):
     os.makedirs(video_directory)

@@ -20,7 +20,7 @@ SAVE_MODE = False
 CONFIDENCE_THRESHOLD = 0.50
 MIN_SAVING_INTERVAL = 0.50
 
-OUTPUT_DIR = "captures"
+OUTPUT_DIR = "captures_img"
 if not os.path.exists(OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR)
 

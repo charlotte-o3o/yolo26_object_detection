@@ -29,21 +29,21 @@ Thumbs.db
 *.sln
 *.swp
 *.pt
-runs/
-Alien-Plushie-1/
 
 # === Enregistrements vidéos et photos
 *.avi
 *.mp4
 *.jpg
 
-# === Sous-dossiers
-Intel_RealSense_D435f/captures_realsense/
-OrbbecSDK/
+# === Sous-dossiers + autres fichiers
+Intel_RealSense_D435f/captures_videos/
 Orbbec_Femto_Bolt/Log/
-Orbbec_Femto_Bolt/captures/
-Log/
-env/
+Orbbec_Femto_Bolt/captures_img/
+OrbbecSDK/
 env_realsense/
 env_orbbec/
 alien_video/
+runs/
+Alien-Plushie-1/
+import_model.py
+training.py
