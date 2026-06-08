@@ -1,7 +1,6 @@
 import os
 os.environ["DISPLAY"] = ":1"
 os.environ["QT_LOGGING_RULES"] = "*.warning=false"
-os.environ["QT_QPA_PLATFORM"] = "offscreen"
 
 import sys
 import contextlib
@@ -28,8 +27,6 @@ if not os.path.exists(OUTPUT_DIR):
 last_save_time = 0
 
 model = YOLO("yolo26n-pose.pt")
-
-os.environ["QT_QPA_PLATFORM"] = "xcb"
 
 pipe = Pipeline()
 config = Config()
@@ -125,7 +122,6 @@ else:
 print()
 
 try:
-    print("Entrée dans la boucle try")
     profile_list = pipe.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
     color_profile = profile_list.get_default_video_stream_profile()
     config.enable_stream(color_profile)
@@ -134,7 +130,6 @@ try:
     depth_profile = profile_list.get_default_video_stream_profile()
     config.enable_stream(depth_profile)
 
-    print("Stream récupéré")
 
     try:
         config.set_align_mode(OBAlignMode.SW_MODE)
@@ -142,30 +137,30 @@ try:
         print(f"[REMARQUE] Alignement SW non supporté ou automatique : {e}")
 
     pipe.start(config)
-    print("Configuration lancée")
 
     while True:
-        print("Récupération des frames...")
         frames = pipe.wait_for_frames(100)
+
         if frames is None:
-            print("Frame non récupérée")
             continue
 
         color_frame = frames.get_color_frame()
         depth_frame = frames.get_depth_frame()
+
         if color_frame is None or depth_frame is None:
-            print("Color frame ou Depth frame non récupérée")
             continue
 
         data = color_frame.get_data()
         enc_img = np.frombuffer(data, dtype=np.uint8)
         frame_bgr = cv2.imdecode(enc_img, cv2.IMREAD_COLOR)
+
         if frame_bgr is None:
             continue
 
         height, width, _ = frame_bgr.shape
 
         distance_m = None
+        
         if depth_frame is not None:
             depth_data = depth_frame.get_data()
             raw_depth = np.frombuffer(depth_data, dtype=np.uint16).reshape(
@@ -189,11 +184,9 @@ try:
             cv2.putText(annotated, current_datetime_str, (width - 225, 30),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
             
-            print("Ouverture de la fenêtre d'affichage...")
 
             cv2.imshow("YOLO26-Pose", annotated)
 
-            print("Fenêtre ouverte")
 
             if num_persons > 0:
                 current_time = time.time()
