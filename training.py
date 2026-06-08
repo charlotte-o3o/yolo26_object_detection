@@ -2,7 +2,6 @@ from ultralytics import YOLO
 
 model = YOLO('yolo26n.pt')
 
-# 2. Lancer le fine-tuning sur ton alien vert
 results = model.train(
     data=f"Alien-Plushie-1/data.yaml", 
     epochs=50,                            # 50 => suffisant pour commencer

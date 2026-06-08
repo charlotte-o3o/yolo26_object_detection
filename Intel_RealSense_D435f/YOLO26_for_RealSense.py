@@ -80,7 +80,7 @@ print(f"La vidéo sera enregistrée dans : {video_path}")
 
 # --- Chargement du modèle YOLO26 nano
 #model = YOLO('yolo26n.pt')
-model = YOLO('best.pt')
+model = YOLO('alien_plushie.pt')
 
 # --- Assignation d'une couleur pour toutes les classes du dataset
 couleurs_classes = {}
