@@ -79,7 +79,8 @@ print("Enregistrement vidéo démarré !")
 print(f"La vidéo sera enregistrée dans : {video_path}")
 
 # --- Chargement du modèle YOLO26 nano
-model = YOLO('yolo26n.pt')
+#model = YOLO('yolo26n.pt')
+model = YOLO('best.pt')
 
 # --- Assignation d'une couleur pour toutes les classes du dataset
 couleurs_classes = {}
@@ -144,6 +145,7 @@ try:
             # --- Aucun mouvement détecté
             # --- On n'applique pas YOLO => inference = 0.0ms
             inference_time = 0.0
+            results = []
         else:
 
         ###################################################################

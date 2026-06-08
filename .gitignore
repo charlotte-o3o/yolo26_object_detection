@@ -29,6 +29,8 @@ Thumbs.db
 *.sln
 *.swp
 *.pt
+runs/
+Alien-Plushie-1/
 
 # === Enregistrements vidéos et photos
 *.avi
@@ -42,6 +44,6 @@ Orbbec_Femto_Bolt/Log/
 Orbbec_Femto_Bolt/captures/
 Log/
 env/
-dataset/
-data.yaml
+env_realsense/
+env_orbbec/
 alien_video/
