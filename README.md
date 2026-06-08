@@ -39,4 +39,4 @@ Le modèle de détection d'objets inclus dans ce dépôt a été **fine-tuné** 
 
 ## 🚧 Work In Progress (WIP)
 
-* **Guide de téléchargement à venir :** Les fichiers du modèle étant volumineux, un guide détaillé expliquant comment et où télécharger les poids du modèle fine-tuné sera très prochainement ajouté à cette section.
+**Guide de téléchargement à venir :** Les fichiers du modèle étant volumineux, un guide détaillé expliquant comment et où télécharger les poids du modèle fine-tuné sera très prochainement ajouté à cette section.
