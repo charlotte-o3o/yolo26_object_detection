@@ -16,7 +16,6 @@ import os
 #                         CONFIGURATION                           # 
 ###################################################################
 
-
 # --- Logs config
 os.environ["QT_QPA_FONTDIR"] = "/usr/share/fonts/truetype/dejavu"
 os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
@@ -115,11 +114,9 @@ try:
         # --- Convertir en tableaux numpy car YOLO ne comprend pas le language natif de la caméra
         img = np.asanyarray(color_frame.get_data())
 
-
         ###################################################################
         #                     DETECTION DE MOUVEMENT                      #
         ###################################################################
-
 
         # --- Calcul du masque de mouvement
         # --- Application d'un flou gaussien (lissage des pixels avec leurs voisins directs) => lissage
@@ -146,7 +143,7 @@ try:
             # --- On n'applique pas YOLO => inference = 0.0ms
             inference_time = 0.0
             results = []
-            
+
         else:
 
         ###################################################################
