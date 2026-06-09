@@ -45,7 +45,4 @@ env_realsense/
 env_orbbec/
 alien_video/
 runs/
-Alien-Plushie-1/
-Alien-Plushie-2/
-import_model.py
-training.py
+model_training/
