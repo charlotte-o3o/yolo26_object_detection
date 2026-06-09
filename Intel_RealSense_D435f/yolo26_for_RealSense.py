@@ -17,7 +17,7 @@ import os
 ###################################################################
 
 
-# --- Fonts config
+# --- Logs config
 os.environ["QT_QPA_FONTDIR"] = "/usr/share/fonts/truetype/dejavu"
 os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
 
@@ -146,6 +146,7 @@ try:
             # --- On n'applique pas YOLO => inference = 0.0ms
             inference_time = 0.0
             results = []
+            
         else:
 
         ###################################################################

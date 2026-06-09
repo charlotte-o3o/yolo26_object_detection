@@ -1,12 +1,7 @@
 import os
-os.environ["DISPLAY"] = ":1"
-os.environ["QT_LOGGING_RULES"] = "*.warning=false"
-
 import contextlib
-
 with contextlib.redirect_stdout(None):
     from pyorbbecsdk import Pipeline, Config, OBSensorType, OBAlignMode
-
 import threading
 import queue
 import cv2
@@ -14,6 +9,20 @@ import time
 import numpy as np
 from pyorbbecsdk import Pipeline, Config, OBSensorType, OBAlignMode
 from ultralytics import YOLO
+
+
+""" ----------------------------------------------------------------------------------------------- """
+""" -------------------- YOLO26-Pose for Orbbec Femto Bolt for Pose Estimation -------------------- """
+""" ----------------------------------------------------------------------------------------------- """
+
+
+###################################################################
+#                         CONFIGURATION                           # 
+###################################################################
+
+# Désactivation des logs graphiques d'arrière-plan
+os.environ["DISPLAY"] = ":1"
+os.environ["QT_LOGGING_RULES"] = "*.warning=false"
 
 SAVE_MODE = False
 CONFIDENCE_THRESHOLD = 0.50

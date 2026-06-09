@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 1
+names: ['alien plushie']
+
+roboflow:
+  workspace: charlotte-2ulmc
+  project: alien-plushie
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/charlotte-2ulmc/alien-plushie/dataset/2
