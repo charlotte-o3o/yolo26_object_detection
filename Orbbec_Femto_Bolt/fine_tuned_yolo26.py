@@ -49,7 +49,7 @@ video_writer = None
 
 # --- Chargement du modèle fine tuned
 #model = YOLO("alien_plushie.pt")
-model = YOLO("alien_plushie_v2.pt")
+model = YOLO("alien_plushie_v3.pt")
 
 # --- Config de la caméra
 pipe = Pipeline()
@@ -214,7 +214,7 @@ print()
 ###################################################################
 #                        RÉCUPÉRATION ET                          #
 #                         TRAITEMENT DES                          #
-#                       FRAMES DE LA CAMÉRA                       #
+#                      FRAMES DE LA CAMÉRA                        #
 ###################################################################
 
 try:

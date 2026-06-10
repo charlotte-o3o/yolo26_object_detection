@@ -67,7 +67,7 @@ try:
                 video_path = os.path.join(VIDEO_DIR, f"capture_{timestamp}.avi")
                 fourcc = cv2.VideoWriter_fourcc(*'XVID')
                 # 25.0 ou 30.0 FPS. Ajuste cette valeur si ta vidéo finale est accélérée ou ralentie.
-                video_writer = cv2.VideoWriter(video_path, fourcc, 25.0, (width, height))
+                video_writer = cv2.VideoWriter(video_path, fourcc, 30.0, (width, height))
                 print(f"[INFO] Enregistrement démarré dans : {video_path}")
 
             # Convertir la profondeur en tableau NumPy (valeurs en mm)
@@ -94,8 +94,8 @@ try:
             # Afficher le flux vidéo à l'écran
             cv2.imshow("Femto Bolt - RGB", frame_rgb)
 
-        # Quitter avec la touche 'q'
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        # Quitter avec la touche 'Échap'
+        if cv2.waitKey(1) & 0xFF == 27:
             break
 
 finally:
