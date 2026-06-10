@@ -40,7 +40,9 @@ Intel_RealSense_D435f/captures_videos/
 Orbbec_Femto_Bolt/Log/
 Orbbec_Femto_Bolt/captures_img/
 Orbbec_Femto_Bolt/captures_videos
+Orbbec_Femto_Bolt/distance_logs
 OrbbecSDK/
 env_realsense/
 env_orbbec/
 model_training/
+data/

@@ -6,6 +6,8 @@ import queue
 import cv2
 import random
 import time
+import math
+import csv
 import numpy as np
 from ultralytics import YOLO
 
@@ -61,6 +63,8 @@ g = random.randint(0, 255)
 r = random.randint(0, 255)
 box_color = (b, g, r)
 
+
+
 """ 
     Mise en place d'une architecture mutli-thread
     - thread principal : lecture des images de la caméra et affichage écran
@@ -75,6 +79,20 @@ inference_queue = queue.Queue(maxsize=1)
 # --- 1 frame par max dans la queue => affichage de la détection la plus récente
 # --- Vers le thread principal
 display_queue = queue.Queue(maxsize=1)
+
+# --- Fichier CSV pour les distances                           
+DISTANCE_LOG_DIR = "distance_logs"                            
+if not os.path.exists(DISTANCE_LOG_DIR):                       
+    os.makedirs(DISTANCE_LOG_DIR)                              
+
+timestamp_csv = time.strftime("%Y-%m-%d_%H-%M-%S")             
+csv_path = os.path.join(DISTANCE_LOG_DIR,                   
+                        f"distances_{timestamp_csv}.csv")      
+csv_file = open(csv_path, "w", newline="")                      
+csv_writer = csv.writer(csv_file)                              
+csv_writer.writerow(["frame_id", "distance_m"])               
+frame_counter = 0                                               
+frame_lock = threading.Lock()                                   
 
 def inference_worker():
 
@@ -138,6 +156,11 @@ def inference_worker():
         #                          ET AFFICHAGE                           #
         ###################################################################
 
+        global frame_counter
+        with frame_lock:
+            frame_counter += 1
+            current_frame_id = frame_counter
+
         if boxes is not None and current_frame_depth is not None:
 
             for box in boxes:
@@ -164,8 +187,10 @@ def inference_worker():
 
                 if distance > 0:
                     text_dist = f"{distance:.2f}m"
+                    csv_writer.writerow([current_frame_id, round(distance, 4)])
                 else:
                     text_dist = "dist. inconnue"
+                    csv_writer.writerow([current_frame_id, math.nan])
 
                 # --- Construction de la chaîne d'affichage (classe, confiance et distance)
                 custom_label = f"{label} ({confie:.1f}%) : {text_dist}"
@@ -179,6 +204,10 @@ def inference_worker():
                 cv2.circle(annotated_frame, (x_center, y_center), 5, (0, 0, 255), -1)
 
                 #print(f"Détection - Object: {label} | Confiance: {confie:.1f}% | Distance: {text_dist}")
+
+        else:
+            # --- Frame sans détection => on logue quand même NaN
+            csv_writer.writerow([current_frame_id, math.nan])  
 
         # --- Infos sur la détection
         cv2.putText(annotated_frame, f"Object(s): {num_objects}", (30, 40), 
@@ -196,20 +225,16 @@ def inference_worker():
 infer_thread = threading.Thread(target=inference_worker, daemon=True)
 infer_thread.start()
 
-print()
-print("----- YOLO26 - Détection d'objets (Orbbec Femto Bolt) -----")
-print()
+print("\n----- YOLO26 - Détection d'objets (Orbbec Femto Bolt) -----")
 if SAVE_MODE:
-    print("Mode sauvegarde d'images activé ! Les images des objets détectés seront enregistrées dans 'captures_img'.")
+    print("\nMode sauvegarde d'images activé ! Les images des objets détectés seront enregistrées dans 'captures_img'.")
 else:
-    print("Mode sauvegarde désactivé.")
-print()
+    print("\nMode sauvegarde désactivé.")
 
 if RECORD_MODE:
-    print("Mode enregistrement vidéo activé ! Le flux sera enregistré dans 'captures_videos/'.")
+    print("\nMode enregistrement vidéo activé ! Le flux sera enregistré dans 'captures_videos/'.")
 else:
-    print("Mode enregistrement vidéo désactivé.")
-print()
+    print("\nMode enregistrement vidéo désactivé.")
 
 ###################################################################
 #                        RÉCUPÉRATION ET                          #
@@ -316,14 +341,21 @@ except Exception as e:
     print(f"Une erreur est survenue pendant l'exécution : {e}")
 
 finally:
+
     # Extinction propre des flux et de l'interface
     inference_queue.put(None)
+    csv_file.close()                                                           
+    print(f"\n[INFO] Distances enregistrées dans '{csv_path}'")
+
     if video_writer is not None:
         video_writer.release()
-        print("[INFO] Enregistrement vidéo finalisé et sauvegardé avec succès.")
+        print("\n[INFO] Enregistrement vidéo finalisé et sauvegardé avec succès.")
+
     try:
         pipe.stop()
+
     except:
         pass
+
     print("\nArrêt de la caméra !")
     cv2.destroyAllWindows()
