@@ -186,8 +186,9 @@ def inference_worker():
                 y_center = max(0, min(y_center, height - 1))
 
                 ###################################################################
-                #                        MESURE ET FILTRAGE                       #
-                #                          DE LA DISTANCE                         # 
+                #                        MESURE, FILTRAGE                         #
+                #                           ET LISSAGE                            #
+                #                         DE LA DISTANCE                          # 
                 ###################################################################
 
                 # --- Lecture de la distance en mètres (Z16 brute / 1000)
@@ -261,21 +262,16 @@ def inference_worker():
                 # --- Dessin d'un petit point rouge au centre de la cible de calcul de profondeur
                 cv2.circle(annotated_frame, (x_center, y_center), 5, (0, 0, 255), -1)
 
-                # --- Affichage visible de loin de la distance
-                font_scale = 10.0                                                 
-                thickness = 14                                                  
-                (tw, th), _ = cv2.getTextSize(text_dist, cv2.FONT_HERSHEY_SIMPLEX,                
-                                            font_scale, thickness)           
+                # --- Affichage visible de loin de la distance                                  
+                (tw, th), _ = cv2.getTextSize(text_dist, cv2.FONT_HERSHEY_SIMPLEX, 10.0, 14)           
                 tx = 30                                                            
                 ty = height - 30                                         
                 overlay = annotated_frame.copy()                                
                 cv2.rectangle(overlay, (tx - 10, ty - th - 10),              
                             (tx + tw + 10, ty + 10), (0, 0, 0), -1)        
-                cv2.addWeighted(overlay, 0.5, annotated_frame, 0.5,        
-                                0, annotated_frame)                             
-                cv2.putText(annotated_frame, text_dist, (tx, ty),           
-                            cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 255, 0), thickness,            
-                            cv2.LINE_AA)    
+                cv2.addWeighted(overlay, 0.5, annotated_frame, 0.5, 0, annotated_frame)                             
+                cv2.putText(annotated_frame, text_dist, (tx, ty), cv2.FONT_HERSHEY_SIMPLEX, 
+                            10.0, (0, 255, 0), 14, cv2.LINE_AA)    
 
                 #print(f"Détection - Object: {label} | Confiance: {confie:.1f}% | Distance: {text_dist}")
 
