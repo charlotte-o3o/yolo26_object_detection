@@ -34,7 +34,7 @@ with contextlib.redirect_stdout(None):
 
 # --- Configuration globale (modes, seuils)
 SAVE_MODE = False
-RECORD_MODE = False
+RECORD_MODE = True
 CONFIDENCE_THRESHOLD = 0.50
 MIN_SAVING_INTERVAL = 1.0
 
@@ -50,7 +50,7 @@ last_save_time = 0
 video_writer = None
 
 # --- Chargement du modèle fine tuned
-#model = YOLO("alien_plushie.pt")
+#model = YOLO("yolo26n.pt")
 model = YOLO("alien_plushie_v3.pt")
 
 # --- Config de la caméra
@@ -63,7 +63,10 @@ g = random.randint(0, 255)
 r = random.randint(0, 255)
 box_color = (b, g, r)
 
-
+distance_history = []                                             
+MAX_HISTORY = 5  
+# --- Différence max de distance autorisée entre deux frames 
+MAX_JUMP = 0.5      
 
 """ 
     Mise en place d'une architecture mutli-thread
@@ -135,7 +138,7 @@ def inference_worker():
         # --- Application du modèle YOLO - détection d'objets        
         start_time = time.perf_counter()
         # --- Renvoie un générateur
-        results = model(frame_bgr, stream=True, conf=CONFIDENCE_THRESHOLD, verbose=False)
+        results = model(frame_bgr, stream=True, conf=CONFIDENCE_THRESHOLD, verbose=False, classes=[0])
         # --- Conversion en liste : utiliser indices, connaître la taille, lire les données plusieurs fois
         results = list(results)
         end_time = time.perf_counter()
@@ -182,14 +185,69 @@ def inference_worker():
                 x_center = max(0, min(x_center, width - 1))
                 y_center = max(0, min(y_center, height - 1))
 
-                # --- Lecture de la distance en mètres (Z16 brute / 1000)
-                distance = current_frame_depth[y_center, x_center] / 1000.0
+                ###################################################################
+                #                        MESURE ET FILTRAGE                       #
+                #                          DE LA DISTANCE                         # 
+                ###################################################################
 
+                # --- Lecture de la distance en mètres (Z16 brute / 1000)
+                #distance = current_frame_depth[y_center, x_center] / 1000.0
+
+                # --- Limitation de la zone de mesure
+                # --- La BB est réduite de 35% de chaque côté : on ne mesure que le coeur central
+                # --- Élimine les pixels flottants ou de fond pouvant fausser la mesure
+                margin_x = int((x2 - x1) * 0.35)                         
+                margin_y = int((y2 - y1) * 0.35)     
+
+                y1_p = max(0, y1 + margin_y)  
+                y2_p = min(current_frame_depth.shape[0], y2 - margin_y)    
+                x1_p = max(0, x1 + margin_x)                             
+                x2_p = min(current_frame_depth.shape[1], x2 - margin_x)
+
+                # --- Exclusion des pixels invalides : pixels de profondeur et 0 (mesures invalides)
+                patch = current_frame_depth[y1_p:y2_p, x1_p:x2_p]                 
+                valid = patch[patch > 0]      
+
+                if len(valid) > 0:   
+
+                    # --- Calcul de la médiane de tous les pixels valides
+                    median_val = float(np.median(valid))
+                    # --- Calcul de l'écart-type => dispersion
+                    std_val = float(np.std(valid))
+                    # --- Garde uniquement les pixels à moins d'1 écart-type de la médiane   
+                    # --- Élimine les valeurs extrêmes résiduelles    
+                    filtered = valid[np.abs(valid - median_val) < std_val] 
+
+                    if len(filtered) > 0: 
+                        # --- Recalcul de la médiane sur lex pixels filtrés                                
+                        distance = float(np.median(filtered)) / 1000.0
+                    else:
+                        distance = median_val / 1000.0 
+
+                else:                                                              
+                    distance = 0.0  
+
+                # --- Filtre saut aberrant => avant d'ajouter à l'historique de distances
+                if distance > 0 and len(distance_history) > 0:
+                    if abs(distance - distance_history[-1]) > MAX_JUMP:
+                        # --- Distance rejetée => on garde la dernière valide
+                        distance = distance_history[-1]  
+
+                # --- Ajout à l'historique et lissage
+                if distance > 0:                              
+                    distance_history.append(distance)   
+
+                    if len(distance_history) > MAX_HISTORY:                       
+                        distance_history.pop(0)  
+
+                    distance = float(np.mean(distance_history)) 
+
+                # --- Affichage et enregistrement dans CSV
                 if distance > 0:
                     text_dist = f"{distance:.2f}m"
                     csv_writer.writerow([current_frame_id, round(distance, 4)])
                 else:
-                    text_dist = "dist. inconnue"
+                    text_dist = "---"
                     csv_writer.writerow([current_frame_id, math.nan])
 
                 # --- Construction de la chaîne d'affichage (classe, confiance et distance)
@@ -203,10 +261,26 @@ def inference_worker():
                 # --- Dessin d'un petit point rouge au centre de la cible de calcul de profondeur
                 cv2.circle(annotated_frame, (x_center, y_center), 5, (0, 0, 255), -1)
 
+                # --- Affichage visible de loin de la distance
+                font_scale = 10.0                                                 
+                thickness = 14                                                  
+                (tw, th), _ = cv2.getTextSize(text_dist, cv2.FONT_HERSHEY_SIMPLEX,                
+                                            font_scale, thickness)           
+                tx = 30                                                            
+                ty = height - 30                                         
+                overlay = annotated_frame.copy()                                
+                cv2.rectangle(overlay, (tx - 10, ty - th - 10),              
+                            (tx + tw + 10, ty + 10), (0, 0, 0), -1)        
+                cv2.addWeighted(overlay, 0.5, annotated_frame, 0.5,        
+                                0, annotated_frame)                             
+                cv2.putText(annotated_frame, text_dist, (tx, ty),           
+                            cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 255, 0), thickness,            
+                            cv2.LINE_AA)    
+
                 #print(f"Détection - Object: {label} | Confiance: {confie:.1f}% | Distance: {text_dist}")
 
         else:
-            # --- Frame sans détection => on logue quand même NaN
+            # --- Frame sans détection => on logue quand même NaN dans les logs de distances
             csv_writer.writerow([current_frame_id, math.nan])  
 
         # --- Infos sur la détection
