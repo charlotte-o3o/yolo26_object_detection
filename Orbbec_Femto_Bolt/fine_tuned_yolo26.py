@@ -24,7 +24,7 @@ model.track()"""
 #                         CONFIGURATION                           # 
 ###################################################################
 
-# --- Logs config
+# --- Logs and display config
 os.environ["DISPLAY"] = ":1"
 os.environ["QT_LOGGING_RULES"] = "*.warning=false"
 
