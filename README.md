@@ -35,4 +35,4 @@ yolo26_object_detection/
 
 ## 🧠 Fine-Tuned YOLO26 Model
 
-The object detection model included in this repository (located in the weights/ folder) has been fine-tuned on a custom dataset to optimize detection accuracy for specific thrown objects that are not natively available in the COCO dataset (on which YOLO models are usually trained).
+The object detection model included in this repository (located in the **weights/** folder) has been fine-tuned on a custom dataset to optimize detection accuracy for specific thrown objects that are not natively available in the COCO dataset (on which YOLO models are usually trained).
