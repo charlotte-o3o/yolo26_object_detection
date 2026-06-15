@@ -28,7 +28,7 @@ Thumbs.db
 *.njsproj
 *.sln
 *.swp
-*.pt
+
 
 # === Enregistrements vidéos et photos
 *.avi
@@ -37,10 +37,13 @@ Thumbs.db
 
 # === Sous-dossiers + autres fichiers
 Intel_RealSense_D435f/captures_videos/
+Intel_RealSense_D435f/*.pt
 Orbbec_Femto_Bolt/Log/
 Orbbec_Femto_Bolt/captures_img/
 Orbbec_Femto_Bolt/captures_videos
 Orbbec_Femto_Bolt/distance_logs
+Orbbec_Femto_Bolt/*.pt
+Webcam/*.pt
 OrbbecSDK/
 env_realsense/
 env_orbbec/
