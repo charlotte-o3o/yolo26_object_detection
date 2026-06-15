@@ -28,7 +28,10 @@ yolo26_object_detection/
 │   └── ...                      
 │
 ├── 📁 Webcam/                     # Scripts for standard webcam usage
-│   └── ...               
+│   └── ...            
+|
+├── 📁 weights/                    # Fine-tuned models
+│   └── alien_plushie_v3.pt  
 │
 └── .gitignore
 ```
