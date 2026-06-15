@@ -33,10 +33,10 @@ with contextlib.redirect_stdout(None):
     from pyorbbecsdk import Pipeline, Config, OBSensorType, OBAlignMode
 
 # --- Configuration globale (modes, seuils)
-SAVE_MODE = False
-RECORD_MODE = True
+SAVE_MODE = True
+RECORD_MODE = False
 CONFIDENCE_THRESHOLD = 0.50
-MIN_SAVING_INTERVAL = 1.0
+MIN_SAVING_INTERVAL = 0.0
 
 OUTPUT_DIR = "captures_img"
 if not os.path.exists(OUTPUT_DIR):
@@ -193,9 +193,9 @@ def inference_worker():
 
                 # --- Lecture de la distance en mètres (Z16 brute / 1000)
                 #distance = current_frame_depth[y_center, x_center] / 1000.0
-
+                
                 # --- Limitation de la zone de mesure
-                # --- La BB est réduite de 35% de chaque côté : on ne mesure que le coeur central
+                # --- La BB est réduite de 70% de chaque côté : on ne mesure que le coeur central
                 # --- Élimine les pixels flottants ou de fond pouvant fausser la mesure
                 margin_x = int((x2 - x1) * 0.35)                         
                 margin_y = int((y2 - y1) * 0.35)     
@@ -227,7 +227,7 @@ def inference_worker():
 
                 else:                                                              
                     distance = 0.0  
-
+                
                 # --- Filtre saut aberrant => avant d'ajouter à l'historique de distances
                 if distance > 0 and len(distance_history) > 0:
                     if abs(distance - distance_history[-1]) > MAX_JUMP:
@@ -241,7 +241,9 @@ def inference_worker():
                     if len(distance_history) > MAX_HISTORY:                       
                         distance_history.pop(0)  
 
+                    print(f"Dist. history : {distance_history}")
                     distance = float(np.mean(distance_history)) 
+                
 
                 # --- Affichage et enregistrement dans CSV
                 if distance > 0:
@@ -266,12 +268,14 @@ def inference_worker():
                 (tw, th), _ = cv2.getTextSize(text_dist, cv2.FONT_HERSHEY_SIMPLEX, 10.0, 14)           
                 tx = 30                                                            
                 ty = height - 30                                         
-                overlay = annotated_frame.copy()                                
+                overlay = annotated_frame.copy() 
+                                     
                 cv2.rectangle(overlay, (tx - 10, ty - th - 10),              
                             (tx + tw + 10, ty + 10), (0, 0, 0), -1)        
                 cv2.addWeighted(overlay, 0.5, annotated_frame, 0.5, 0, annotated_frame)                             
                 cv2.putText(annotated_frame, text_dist, (tx, ty), cv2.FONT_HERSHEY_SIMPLEX, 
                             10.0, (0, 255, 0), 14, cv2.LINE_AA)    
+                    
 
                 #print(f"Détection - Object: {label} | Confiance: {confie:.1f}% | Distance: {text_dist}")
 
@@ -286,7 +290,7 @@ def inference_worker():
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
         if not display_queue.full():
-            display_queue.put((annotated_frame, num_objects))
+            display_queue.put((annotated_frame, num_objects, current_frame_depth.copy() if current_frame_depth is not None else None))
 
 # --- Démarrage du thread d'arrière-plan
 # --- Tâche parallèle séparée du flux principal
@@ -377,7 +381,7 @@ try:
 
         # --- Récupération et affichage graphique (Thread Principal)
         if not display_queue.empty():
-            annotated, num_objects = display_queue.get_nowait()
+            annotated, num_objects, depth_for_display = display_queue.get_nowait()
 
             current_datetime_str = time.strftime("%d/%m/%Y  %H:%M:%S")
             cv2.putText(annotated, current_datetime_str, (width - 225, 30),
@@ -386,8 +390,21 @@ try:
             if RECORD_MODE and video_writer is not None:
                 video_writer.write(annotated)
             
-            # --- Fenêtre d'affichage
+            # --- Fenêtres d'affichage
             cv2.imshow("YOLO26 - Alien Plushie Detection", annotated)
+
+            if depth_for_display is not None:
+                # --- Masque de pixels valides
+                max_visual_distance = 7000 # 7 mètres max mis en valeur
+                depth_vis = np.clip(depth_for_display, 0, max_visual_distance)
+                
+                # --- Conversion distances en échelle 0-255
+                depth_vis = cv2.normalize(depth_vis, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+                
+                # --- Filtre de couleur
+                depth_colormap = cv2.applyColorMap(255 - depth_vis, cv2.COLORMAP_JET)
+            
+                cv2.imshow("Orbbec Femto Bolt - Aligned Depth Map", depth_colormap)
 
             # --- Gestion des captures d'images en cas de détection (si mode enregistrement photos activé)
             if num_objects > 0:
