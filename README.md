@@ -1,42 +1,42 @@
 # YOLO26 Object Detection & Pose Estimation
 
-Ce dépôt contient un code développé pour la **détection d'objets lancés** ainsi que la **détection de personnes** en temps réel, en utilisant des modèles YOLO avancés.
+This repository contains code developed for real-time **thrown object detection** and **human detection**, using advanced YOLO models.
 
-## 🤖 Fonctionnalités principales
+## 🤖 Key Features
 
-* **Détection d'objets lancés :** Utilisation d'un modèle **YOLO26 personnalisé (fine-tuné par mes soins)** spécialement entraîné pour suivre et détecter des objets en mouvement rapide.
-* **Estimation de pose (Pose Estimation) :** Intégration de **YOLO Pose** pour la détection et le suivi des personnes/structures corporelles.
-* **Multi-caméras :** Support et scripts adaptés pour différents types de capteurs et caméras.
+* **Thrown Object Detection:** Utilizes a **custom YOLO26 model (fine-tuned by myself)** specifically trained to track and detect fast-moving objects.
+* **Pose Estimation:** Integrates **YOLO Pose** for detecting and tracking people/body structures.
+* **Multi-camera Support:** Includes dedicated scripts tailored for different types of sensors and cameras.
 
 ---
 
-## 📁 Structure du projet
+## 📁 Project Structure
 
-Le projet est divisé en dossiers spécifiques selon le matériel (caméra) utilisé. 
+The project is organized into specific directories based on the hardware (camera) used. 
 
-> ⚠️ **Important :** Chaque type de caméra possède ses propres contraintes de dépendances. Un fichier `requirements.txt` dédié est donc présent dans chaque sous-dossier car **les versions des bibliothèques à utiliser diffèrent d'un matériel à l'autre**.
+> ⚠️ **Important:** Each camera type has its own dependency constraints. A dedicated `requirements.txt` file is provided within each subfolder because **the library versions required differ from one hardware setup to another**.
 
 ```text
 yolo26_object_detection/
 │
-├── 📁 Intel_RealSense_D435f/      # Scripts spécifiques à la caméra Intel RealSense
-│   ├── requirements.txt           # Dépendances pour RealSense
+├── 📁 Intel_RealSense_D435f/      # Specific scripts for the Intel RealSense camera
+│   ├── requirements.txt           # Dependencies for RealSense
 │   └── ...                        # YOLO26_for_RealSense.py, point_cloud.py, etc.
 │
-├── 📁 Orbbec_Femto_Bolt/          # Scripts spécifiques à la caméra Orbbec
-│   ├── requirements.txt           # Dépendances pour Orbbec
+├── 📁 Orbbec_Femto_Bolt/          # Specific scripts for the Orbbec camera
+│   ├── requirements.txt           # Dependencies for Orbbec
 │   └── ...                        # launch_orbbec.py, yolo26_pose_orbbec.py, etc.
 │
-├── 📁 Webcam/                     # Scripts pour l'utilisation d'une webcam standard
+├── 📁 Webcam/                     # Scripts for standard webcam usage
 │   └── ...                        # segmentation.py, test_yolo.py
 │
 └── .gitignore
 ```
 
-## 🧠 Modèle YOLO26 Fine-Tuné
+## 🧠 Fine-Tuned YOLO26 Model
 
-Le modèle de détection d'objets inclus dans ce dépôt a été **fine-tuné** sur un jeu de données personnalisé afin d'optimiser la précision de la détection sur des objets lancés **spécifiques**, non présents dans le dataset COCO sur lequel les modèles YOLO sont usuellement entraînés.
+The object detection model included in this repository has been fine-tuned on a custom dataset to optimize detection accuracy for specific thrown objects that are not natively available in the COCO dataset (on which YOLO models are usually trained).
 
 ## 🚧 Work In Progress (WIP)
 
-**Guide de téléchargement à venir :** Les fichiers du modèle étant volumineux, un guide détaillé expliquant comment et où télécharger les poids du modèle fine-tuné sera très prochainement ajouté à cette section.
+**Download guide coming soon:** Due to the large size of the model files, a detailed guide explaining how and where to download the fine-tuned model weights will be added to this section very shortly.
