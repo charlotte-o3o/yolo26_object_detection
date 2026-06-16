@@ -74,7 +74,7 @@ def inference_worker():
 
             kpts = keypoints_object.data.cpu().numpy()
 
-            for i, box in enumerate(boxes):
+            for i, _ in enumerate(boxes):
                 # S'assurer que les keypoints existent pour cette personne
                 if i >= len(kpts):
                     continue
