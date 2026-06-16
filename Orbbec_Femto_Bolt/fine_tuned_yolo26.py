@@ -16,9 +16,6 @@ from ultralytics import YOLO
 """ ---------------------- YOLO26 for Orbbec Femto Bolt for Object Detection ---------------------- """
 """ ----------------------------------------------------------------------------------------------- """
 
-"""RAJOUTER TRACKING (=> sachant qu'il n'y aura qu'un seul objet 
-=> a chaque fois qu'il y en a un détecté ça sera le même)
-model.track()"""
 
 ###################################################################
 #                         CONFIGURATION                           # 
