@@ -141,7 +141,7 @@ def inference_worker():
         results = model(frame_bgr, stream=True, conf=CONFIDENCE_THRESHOLD, verbose=False, classes=[0])
         # --- Conversion en liste : utiliser indices, connaître la taille, lire les données plusieurs fois
         results = list(results)
-        end_time = time.perf_counter()
+        end_time = time.perf_counter() 
 
         # --- Calcul du temps d'inférence de YOLO
         inference_time_ms = (end_time - start_time) * 1000.0
